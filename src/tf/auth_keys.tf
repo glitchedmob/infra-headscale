@@ -1,53 +1,26 @@
-locals {
-  headscale_proxmox_nodes_set = toset(local.headscale_proxmox_nodes)
+module "headscale_proxmox_auth_keys" {
+  for_each = toset(local.headscale_proxmox_nodes)
+  source   = "./modules/headscale-pre-auth-key"
+
+  user_id                   = headscale_user.proxmox.id
+  time_to_expire            = "1h"
+  reusable                  = false
+  ephemeral                 = false
+  acl_tags                  = [local.proxmox_tag]
+  ssm_parameter_name        = "/homelab/headscale/proxmox/${each.key}-auth-key"
+  ssm_parameter_description = "Headscale pre-auth key for ${each.key}"
+  auth_key_rotation_version = 1
 }
 
-resource "terraform_data" "headscale_key_rotation" {
-  input = local.headscale_key_rotation_version
-}
+module "headscale_gha_sgfdevs_auth_key" {
+  source = "./modules/headscale-pre-auth-key"
 
-resource "headscale_pre_auth_key" "proxmox" {
-  for_each = local.headscale_proxmox_nodes_set
-
-  user           = headscale_user.proxmox.id
-  time_to_expire = "1h"
-  reusable       = false
-  ephemeral      = false
-  acl_tags       = [local.proxmox_tag]
-
-  lifecycle {
-    replace_triggered_by = [terraform_data.headscale_key_rotation]
-  }
-}
-
-resource "headscale_pre_auth_key" "gha_sgfdevs" {
-  user           = headscale_user.gha_sgfdevs.id
-  time_to_expire = "720h"
-  reusable       = true
-  ephemeral      = true
-  acl_tags       = [local.gha_sgfdevs_tag]
-
-  lifecycle {
-    replace_triggered_by = [terraform_data.headscale_key_rotation]
-  }
-}
-
-resource "aws_ssm_parameter" "headscale_proxmox_auth_key" {
-  for_each = local.headscale_proxmox_nodes_set
-
-  name             = "${local.headscale_ssm_path_prefix}/${each.value}-auth-key"
-  type             = "SecureString"
-  description      = "Headscale pre-auth key for ${each.value}"
-  value_wo         = headscale_pre_auth_key.proxmox[each.value].key
-  value_wo_version = local.headscale_key_rotation_version
-  overwrite        = true
-}
-
-resource "aws_ssm_parameter" "headscale_gha_sgfdevs_auth_key" {
-  name             = local.headscale_gha_sgfdevs_auth_key_ssm_path
-  type             = "SecureString"
-  description      = "Headscale pre-auth key for sgfdevs GitHub Actions"
-  value_wo         = headscale_pre_auth_key.gha_sgfdevs.key
-  value_wo_version = local.headscale_key_rotation_version
-  overwrite        = true
+  user_id                   = headscale_user.gha_sgfdevs.id
+  time_to_expire            = "36500d"
+  reusable                  = true
+  ephemeral                 = true
+  acl_tags                  = [local.gha_sgfdevs_tag]
+  ssm_parameter_name        = "/homelab/headscale/gha/sgfdevs-auth-key"
+  ssm_parameter_description = "Headscale pre-auth key for sgfdevs GitHub Actions"
+  auth_key_rotation_version = 7
 }

@@ -4,7 +4,7 @@ Terraform configuration for Headscale control-plane resources in glitchedmob.
 
 ## Scope
 
-- **OpenTofu (`src/tf/`)**: manages Headscale users and ACL policy resources.
+- **OpenTofu (`src/tf/`)**: manages Headscale users, pre-auth keys, ACL policy resources, and auth-key publishing to AWS SSM.
 
 ## Prerequisites
 

@@ -2,9 +2,9 @@
 
 Terraform configuration for Headscale control-plane resources in glitchedmob.
 
-## Components
+## Scope
 
-- **src/tf/** - OpenTofu project managing Headscale users and ACL policy
+- **OpenTofu (`src/tf/`)**: manages Headscale users and ACL policy resources.
 
 ## Prerequisites
 
@@ -16,14 +16,17 @@ Terraform configuration for Headscale control-plane resources in glitchedmob.
 ## Usage
 
 ```bash
-make tf-init     # Initialize
-make tf-plan     # Preview changes
-make tf-apply    # Apply changes
-make tf-validate # Validate syntax
-make tf-format   # Check formatting
+make tf-init
+make tf-plan
+make tf-show ARGS=tfplan
+make tf-output
+make tf-apply
+make tf-validate
+make tf-format
+make tf-lint-fix
 ```
 
-## Notes
+## Operational Notes
 
 - Apply this after `infra-public-edge` has deployed Headscale and it is reachable.
 - Backend key intentionally remains `headscale-global/terraform.tfstate` to preserve existing state location.

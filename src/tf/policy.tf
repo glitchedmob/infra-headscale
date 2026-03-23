@@ -9,10 +9,12 @@ resource "headscale_policy" "this" {
     }
     "tagOwners" : {
       (local.proxmox_tag) : ["group:infra"]
+      (local.gha_sgfdevs_tag) : ["group:infra"]
     }
     "autoApprovers" : {
       "routes" : {
-        (local.proxmox_route) : [local.proxmox_tag]
+        (local.management_route) : [local.proxmox_tag]
+        (local.workload_route_supernet) : [local.proxmox_tag]
       }
     }
     "acls" : [
@@ -21,13 +23,30 @@ resource "headscale_policy" "this" {
         "src" : ["group:admins"]
         "dst" : [
           format("%s:*", local.proxmox_tag),
-          format("%s:*", local.proxmox_route),
+          format("%s:*", local.management_route),
+          format("%s:*", local.workload_route_supernet),
         ]
       },
       {
         "action" : "accept"
         "src" : [local.proxmox_tag]
         "dst" : [format("%s:*", local.proxmox_tag)]
+      },
+      {
+        "action" : "accept"
+        "src" : [local.gha_sgfdevs_tag]
+        "dst" : [format("%s:8006", local.proxmox_tag)]
+      },
+      {
+        "action" : "accept"
+        "src" : [local.gha_sgfdevs_tag]
+        "dst" : [format("%s:22", local.sgfdevs_workload_cidr)]
+      },
+      {
+        "action" : "accept"
+        "proto" : "icmp"
+        "src" : [local.gha_sgfdevs_tag]
+        "dst" : [format("%s:*", local.sgfdevs_workload_cidr)]
       },
     ]
   })

@@ -20,6 +20,18 @@ resource "headscale_pre_auth_key" "proxmox" {
   }
 }
 
+resource "headscale_pre_auth_key" "gha_sgfdevs" {
+  user           = headscale_user.gha_sgfdevs.id
+  time_to_expire = "720h"
+  reusable       = true
+  ephemeral      = true
+  acl_tags       = [local.gha_sgfdevs_tag]
+
+  lifecycle {
+    replace_triggered_by = [terraform_data.headscale_key_rotation]
+  }
+}
+
 resource "aws_ssm_parameter" "headscale_proxmox_auth_key" {
   for_each = local.headscale_proxmox_nodes_set
 
@@ -27,6 +39,15 @@ resource "aws_ssm_parameter" "headscale_proxmox_auth_key" {
   type             = "SecureString"
   description      = "Headscale pre-auth key for ${each.value}"
   value_wo         = headscale_pre_auth_key.proxmox[each.value].key
+  value_wo_version = local.headscale_key_rotation_version
+  overwrite        = true
+}
+
+resource "aws_ssm_parameter" "headscale_gha_sgfdevs_auth_key" {
+  name             = local.headscale_gha_sgfdevs_auth_key_ssm_path
+  type             = "SecureString"
+  description      = "Headscale pre-auth key for sgfdevs GitHub Actions"
+  value_wo         = headscale_pre_auth_key.gha_sgfdevs.key
   value_wo_version = local.headscale_key_rotation_version
   overwrite        = true
 }

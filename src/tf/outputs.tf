@@ -5,3 +5,8 @@ output "headscale_proxmox_auth_key_ssm_paths" {
   }
   description = "SSM parameter paths for per-node Headscale pre-auth keys"
 }
+
+output "headscale_gha_sgfdevs_auth_key_ssm_path" {
+  value       = aws_ssm_parameter.headscale_gha_sgfdevs_auth_key.name
+  description = "SSM parameter path for sgfdevs GitHub Actions Headscale pre-auth key"
+}

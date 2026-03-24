@@ -9,6 +9,7 @@ resource "headscale_policy" "this" {
     }
     "tagOwners" : {
       (local.proxmox_tag) : ["group:infra"]
+      (local.infra_public_edge_tag) : ["group:infra"]
       (local.gha_sgfdevs_tag) : ["group:infra"]
     }
     "autoApprovers" : {
@@ -31,6 +32,16 @@ resource "headscale_policy" "this" {
         "action" : "accept"
         "src" : [local.proxmox_tag]
         "dst" : [format("%s:*", local.proxmox_tag)]
+      },
+      {
+        "action" : "accept"
+        "src" : [local.infra_public_edge_tag]
+        "dst" : [format("%s:80", local.sgfdevs_workload_cidr)]
+      },
+      {
+        "action" : "accept"
+        "src" : [local.infra_public_edge_tag]
+        "dst" : [format("%s:443", local.sgfdevs_workload_cidr)]
       },
       {
         "action" : "accept"

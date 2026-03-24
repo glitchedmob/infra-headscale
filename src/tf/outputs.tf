@@ -10,3 +10,8 @@ output "headscale_gha_sgfdevs_auth_key_ssm_path" {
   value       = module.headscale_gha_sgfdevs_auth_key.ssm_parameter_name
   description = "SSM parameter path for sgfdevs GitHub Actions Headscale pre-auth key"
 }
+
+output "headscale_infra_public_edge_auth_key_ssm_path" {
+  value       = module.headscale_infra_public_edge_auth_key.ssm_parameter_name
+  description = "SSM parameter path for infra-public-edge Headscale pre-auth key"
+}

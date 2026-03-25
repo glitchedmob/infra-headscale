@@ -1,12 +1,15 @@
 locals {
   management_route        = "10.0.0.0/24"
   workload_route_supernet = "10.20.0.0/16"
+  lz_workload_cidr        = "10.20.0.0/22"
   sgfdevs_workload_cidr   = "10.20.4.0/22"
   proxmox_tag             = "tag:proxmox-x86"
   infra_public_edge_tag   = "tag:infra-public-edge"
+  gha_lz_tag              = "tag:gha-lz"
   gha_sgfdevs_tag         = "tag:gha-sgfdevs"
   proxmox_user            = "proxmox"
   infra_public_edge_user  = "infra-public-edge"
+  gha_lz_user             = "gha-lz"
   gha_sgfdevs_user        = "gha-sgfdevs"
   infra_public_edge_node  = "x86-vps-node-01"
   admins                  = [headscale_user.levizitting.name]

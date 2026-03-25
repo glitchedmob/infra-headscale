@@ -12,6 +12,19 @@ module "headscale_proxmox_auth_keys" {
   auth_key_rotation_version = 1
 }
 
+module "headscale_gha_lz_auth_key" {
+  source = "./modules/headscale-pre-auth-key"
+
+  user_id                   = headscale_user.gha_lz.id
+  time_to_expire            = "36500d"
+  reusable                  = true
+  ephemeral                 = true
+  acl_tags                  = [local.gha_lz_tag]
+  ssm_parameter_name        = "/homelab/headscale/gha/lz-auth-key"
+  ssm_parameter_description = "Headscale pre-auth key for lz GitHub Actions"
+  auth_key_rotation_version = 1
+}
+
 module "headscale_gha_sgfdevs_auth_key" {
   source = "./modules/headscale-pre-auth-key"
 

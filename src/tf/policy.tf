@@ -56,6 +56,16 @@ resource "headscale_policy" "this" {
       },
       {
         "action" : "accept"
+        "src" : [local.infra_public_edge_tag]
+        "dst" : [format("%s:80", local.proxmox_tag)]
+      },
+      {
+        "action" : "accept"
+        "src" : [local.infra_public_edge_tag]
+        "dst" : [format("%s:443", local.proxmox_tag)]
+      },
+      {
+        "action" : "accept"
         "src" : [local.gha_lz_tag]
         "dst" : [format("%s:8006", local.proxmox_tag)]
       },

@@ -1,32 +1,25 @@
 # infra-headscale
 
-Terraform configuration for Headscale control-plane resources in glitchedmob.
+Manages Headscale users, policy, and pre-auth key lifecycle for LZ infrastructure and automation identities.
 
 ## Scope
+- Owns: Headscale user resources for humans, infrastructure nodes, and GitHub Actions identities.
+- Owns: Headscale ACL/tag policy and route approval rules.
+- Owns: pre-auth key generation and storage in AWS SSM Parameter Store.
 
-- **OpenTofu (`src/tf/`)**: manages Headscale users, pre-auth keys, ACL policy resources, and auth-key publishing to AWS SSM.
+## Structure
+- `src/tf/`: OpenTofu resources for users, ACL policy, and auth key modules.
+- `src/tf/modules/headscale-pre-auth-key/`: Reusable module for key generation and SSM writes.
+- `.github/workflows/`: Plan/validate/apply automation for this stack.
 
-## Prerequisites
-
-- [OpenTofu](https://opentofu.org/) >= 1.11 (version in `src/tf/.tofu-version`)
-- AWS credentials (for S3 backend and DynamoDB lock table)
-- Headscale API key
-- Reachable Headscale endpoint (default: `https://headscale.levizitting.com`)
-
-## Usage
-
+## Run
 ```bash
+make help
 make tf-init
 make tf-plan
-make tf-show ARGS=tfplan
-make tf-output
 make tf-apply
-make tf-validate
-make tf-format
-make tf-lint-fix
+make tf-output
 ```
 
-## Operational Notes
-
-- Apply this after `infra-public-edge` has deployed Headscale and it is reachable.
-- Backend key intentionally remains `headscale-global/terraform.tfstate` to preserve existing state location.
+## Operating constraints
+- Apply after Headscale is reachable (deployed by [`glitchedmob/infra-public-edge`](https://github.com/glitchedmob/infra-public-edge)).
